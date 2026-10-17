@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "saas_pos_f"
+		},
+		{
+			"path": "saas_pos_bk"
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic",
+		"java.configuration.updateBuildConfiguration": "interactive"
+	}
+}
