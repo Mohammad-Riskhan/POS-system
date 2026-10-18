@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
 
                         // Platform Super Admin only: strictly guarded
-                        .requestMatchers("/api/admin/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN", "OWNER")
 
                         // Batch item lookups (accessible to Cashiers and Business Owners)
                         .requestMatchers("/api/business/batches/item/**").hasAnyRole("SUPER_ADMIN", "BUSINESS_OWNER", "CASHIER")

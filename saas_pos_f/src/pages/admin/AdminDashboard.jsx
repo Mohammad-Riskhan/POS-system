@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { Navbar } from '../../components/Navbar';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -17,6 +18,7 @@ import {
   X,
   RefreshCw,
   TrendingUp,
+  CreditCard,
 } from 'lucide-react';
 
 export const AdminDashboard = () => {
@@ -243,6 +245,14 @@ export const AdminDashboard = () => {
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
+            <Link
+              id="admin-manage-subscriptions-btn"
+              to="/admin/subscriptions"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/50 transition-all duration-150"
+            >
+              <CreditCard className="w-4 h-4 text-indigo-400" />
+              <span>Subscriptions</span>
+            </Link>
             <button
               id="admin-onboard-business-btn"
               onClick={() => {
