@@ -38,10 +38,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         authorities.add(new SimpleGrantedAuthority(roleWithPrefix));
 
         // 3. Strict Super Admin role assignment:
-        if (user.getRole() == Role.ROLE_SUPER_ADMIN) {
+        if (user.getRole() == Role.ROLE_SUPER_ADMIN || user.getRole() == Role.ROLE_OWNER) {
             authorities.add(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"));
             authorities.add(new SimpleGrantedAuthority("SUPER_ADMIN"));
-        } else if (user.getRole() == Role.ROLE_BUSINESS_OWNER || user.getRole() == Role.ROLE_OWNER) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_OWNER"));
+            authorities.add(new SimpleGrantedAuthority("OWNER"));
+        } else if (user.getRole() == Role.ROLE_BUSINESS_OWNER) {
             authorities.add(new SimpleGrantedAuthority("ROLE_BUSINESS_OWNER"));
             authorities.add(new SimpleGrantedAuthority("BUSINESS_OWNER"));
         } else if (user.getRole() == Role.ROLE_CASHIER) {
