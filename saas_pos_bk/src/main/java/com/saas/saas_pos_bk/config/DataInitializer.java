@@ -26,6 +26,8 @@ public class DataInitializer implements CommandLineRunner {
     private final CustomerRepository customerRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
+    private final BusinessSubscriptionRepository businessSubscriptionRepository;
     private final PasswordEncoder passwordEncoder;
     private final javax.sql.DataSource dataSource;
 
@@ -138,6 +140,66 @@ public class DataInitializer implements CommandLineRunner {
                 userRepository.save(superAdmin);
                 log.info(">>> Enforced clean credentials and ROLE_SUPER_ADMIN for {}", SUPER_ADMIN_EMAIL);
             }
+        }
+
+        // 4. Seed default subscription plans if table is empty
+        if (subscriptionPlanRepository.count() == 0) {
+            com.saas.saas_pos_bk.entity.SubscriptionPlan starter = com.saas.saas_pos_bk.entity.SubscriptionPlan.builder()
+                    .name("Starter Plan")
+                    .description("Essential POS tools for single-location small retailers.")
+                    .price(new java.math.BigDecimal("29.00"))
+                    .billingCycle("MONTHLY")
+                    .maxCashiers(2)
+                    .maxItems(500)
+                    .isActive(true)
+                    .build();
+            subscriptionPlanRepository.save(starter);
+
+            com.saas.saas_pos_bk.entity.SubscriptionPlan growth = com.saas.saas_pos_bk.entity.SubscriptionPlan.builder()
+                    .name("Growth Plan")
+                    .description("Full inventory management and multi-terminal capabilities for growing outlets.")
+                    .price(new java.math.BigDecimal("79.00"))
+                    .billingCycle("MONTHLY")
+                    .maxCashiers(5)
+                    .maxItems(2500)
+                    .isActive(true)
+                    .build();
+            subscriptionPlanRepository.save(growth);
+
+            com.saas.saas_pos_bk.entity.SubscriptionPlan enterprise = com.saas.saas_pos_bk.entity.SubscriptionPlan.builder()
+                    .name("Enterprise Annual")
+                    .description("High-volume retail chain solution with dedicated priority infrastructure.")
+                    .price(new java.math.BigDecimal("799.00"))
+                    .billingCycle("YEARLY")
+                    .maxCashiers(25)
+                    .maxItems(15000)
+                    .isActive(true)
+                    .build();
+            subscriptionPlanRepository.save(enterprise);
+            log.info(">>> Provisioned default subscription tiers (Starter, Growth, Enterprise Annual)");
+        }
+
+        // 5. Ensure existing businesses have an active subscription so they are not blocked on boot
+        com.saas.saas_pos_bk.entity.SubscriptionPlan defaultPlan = subscriptionPlanRepository.findAll().stream().findFirst().orElse(null);
+        if (defaultPlan != null) {
+            businessRepository.findAll().forEach(biz -> {
+                boolean hasActiveSub = businessSubscriptionRepository
+                        .findFirstByBusinessBIdAndStatusOrderByEndDateDesc(biz.getBId(), "ACTIVE")
+                        .isPresent();
+                if (!hasActiveSub) {
+                    com.saas.saas_pos_bk.entity.BusinessSubscription sub = com.saas.saas_pos_bk.entity.BusinessSubscription.builder()
+                            .business(biz)
+                            .plan(defaultPlan)
+                            .startDate(java.time.LocalDateTime.now())
+                            .endDate(java.time.LocalDateTime.now().plusMonths(3))
+                            .status("ACTIVE")
+                            .paymentStatus("PAID")
+                            .notes("Initial onboarding active subscription")
+                            .build();
+                    businessSubscriptionRepository.save(sub);
+                    log.info("Provisioned initial active subscription for existing business: {}", biz.getBName());
+                }
+            });
         }
     }
 }

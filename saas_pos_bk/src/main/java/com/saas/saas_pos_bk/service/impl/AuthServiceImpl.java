@@ -5,10 +5,13 @@ import com.saas.saas_pos_bk.dto.AuthResponseDTO;
 import com.saas.saas_pos_bk.dto.LoginRequestDTO;
 import com.saas.saas_pos_bk.dto.UserResponseDTO;
 import com.saas.saas_pos_bk.entity.User;
+import com.saas.saas_pos_bk.entity.Role;
 import com.saas.saas_pos_bk.exception.BadRequestException;
 import com.saas.saas_pos_bk.exception.ResourceNotFoundException;
+import com.saas.saas_pos_bk.exception.SubscriptionExpiredException;
 import com.saas.saas_pos_bk.repository.UserRepository;
 import com.saas.saas_pos_bk.service.AuthService;
+import com.saas.saas_pos_bk.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +25,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
+    private final SubscriptionService subscriptionService;
 
     @Override
     @Transactional(readOnly = true)
@@ -39,6 +43,12 @@ public class AuthServiceImpl implements AuthService {
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getUPassword())) {
             throw new BadCredentialsException("Invalid email or password");
+        }
+
+        if (user.getRole() == Role.ROLE_BUSINESS_OWNER || user.getRole() == Role.ROLE_CASHIER) {
+            if (user.getBusiness() == null || !subscriptionService.isBusinessSubscriptionActive(user.getBusiness().getBId())) {
+                throw new SubscriptionExpiredException("Your business subscription has expired. Please contact the administrator.");
+            }
         }
 
         String token = tokenProvider.generateToken(user);

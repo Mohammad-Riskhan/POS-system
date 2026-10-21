@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { SubscriptionManagementPage } from './pages/admin/SubscriptionManagementPage';
 import { BusinessDashboard } from './pages/business/BusinessDashboard';
 import { PosTerminal } from './pages/pos/PosTerminal';
 
@@ -51,6 +52,16 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['ROLE_SUPER_ADMIN', 'SUPER_ADMIN', 'ROLE_OWNER']}>
                 <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Subscription Plan & Tenant Lifecycle Management */}
+          <Route
+            path="/admin/subscriptions"
+            element={
+              <ProtectedRoute allowedRoles={['ROLE_SUPER_ADMIN', 'SUPER_ADMIN', 'ROLE_OWNER']}>
+                <SubscriptionManagementPage />
               </ProtectedRoute>
             }
           />

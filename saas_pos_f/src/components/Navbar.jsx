@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   Store,
@@ -10,11 +10,13 @@ import {
   Layers,
   Building2,
   Terminal,
+  CreditCard,
 } from 'lucide-react';
 
 export const Navbar = () => {
   const { user, role, businessName, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -80,6 +82,36 @@ export const Navbar = () => {
             )}
           </div>
         </Link>
+
+        {/* Navigation Tabs for Platform Admin */}
+        {(role === 'ROLE_SUPER_ADMIN' || role === 'SUPER_ADMIN' || role === 'ROLE_OWNER') && (
+          <nav className="hidden md:flex items-center gap-1.5 bg-slate-950/70 border border-slate-800 rounded-xl p-1 text-xs">
+            <Link
+              id="nav-tab-businesses"
+              to="/admin/dashboard"
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-semibold transition-all ${
+                location.pathname === '/admin/dashboard'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+              }`}
+            >
+              <Building2 className="w-3.5 h-3.5" />
+              <span>Businesses</span>
+            </Link>
+            <Link
+              id="nav-tab-subscriptions"
+              to="/admin/subscriptions"
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-semibold transition-all ${
+                location.pathname === '/admin/subscriptions'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+              }`}
+            >
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>Subscriptions</span>
+            </Link>
+          </nav>
+        )}
 
         {/* User Info & Actions */}
         <div className="flex items-center gap-3 sm:gap-4">
