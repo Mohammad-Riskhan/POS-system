@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.saas.saas_pos_bk.SaasPosBkApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.29 s -- in com.saas.saas_pos_bk.SaasPosBkApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.78 s -- in com.saas.saas_pos_bk.SaasPosBkApplicationTests
